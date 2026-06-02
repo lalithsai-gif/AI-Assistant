@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="chat-wrapper">
+
+    <div class="welcome" id="welcome">
+        <h1>How can I help you?</h1>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="input-container">
+        <div class="input-box">
+            <textarea id="query" placeholder="Ask anything" rows="1"></textarea>
+
+            <div class="actions">
+                <button class="icon-btn">+</button>
+                <button class="send-btn" id="sendBtn">Ask</button>
+            </div>
+        </div>
+
+        <p class="footer-text">
+            AI is in development stage. Can make mistakes. Check important info.
+        </p>
+    </div>
+</div>
+
+<script>
+const sendBtn = document.getElementById("sendBtn");
+const queryInput = document.getElementById("query");
+const messages = document.getElementById("messages");
+const welcome = document.getElementById("welcome");
+
+async function sendMessage() {
+
+    const query = queryInput.value.trim();
+
+    if (!query) return;
+
+    welcome.style.display = "none";
+
+    const userDiv = document.createElement("div");
+    userDiv.className = "message user-message";
+    userDiv.textContent = "You:\n" + query;
+
+    messages.appendChild(userDiv);
+
+    queryInput.value = "";
+
+    messages.scrollTop = messages.scrollHeight;
+
+    const botDiv = document.createElement("div");
+    botDiv.className = "message bot-message";
+    botDiv.textContent = "Assistant:\nThinking...";
+
+    messages.appendChild(botDiv);
+
+    messages.scrollTop = messages.scrollHeight;
+
+    try {
+
+        const response = await fetch("/query", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                query: query
+            })
+        });
+
+        const data = await response.json();
+
+        botDiv.textContent = "Assistant:\n" + data.response;
+
+    } catch (error) {
+
+        botDiv.textContent = "Assistant:\nError connecting to server.";
+        console.error(error);
+    }
+
+    messages.scrollTop = messages.scrollHeight;
+}
+
+sendBtn.addEventListener("click", sendMessage);
+
+queryInput.addEventListener("keydown", function(e) {
+
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+
+});
+</script>
+
+</body>
+</html>
