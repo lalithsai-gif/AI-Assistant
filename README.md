@@ -1,4 +1,4 @@
-# AI Assistant 🚀
+# AI Assistant
 
 A simple AI-powered Assistant built using **Flask**, **HTML/CSS**, and **Google Gemini API**. The application provides a clean chat interface where users can ask questions and receive AI-generated responses in real time.
 
